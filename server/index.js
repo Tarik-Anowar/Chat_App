@@ -16,7 +16,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     pingTimeout: 60000,
     cors: {
-        origin: '*',
+        origin: 'https://chat-app-client-jade.vercel.app',
         methods: ['GET', 'POST'] 
     }
 });
