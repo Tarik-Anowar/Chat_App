@@ -1,7 +1,18 @@
-.message{
+/* .message{
     display:flex;
     flex-direction: column;
     overflow-y: scroll;
     scrollbar-width: none;
     
+} */
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex: 1;
+}
+
+input {
+    background-color: rgba(200, 200, 200, 1);
 }
