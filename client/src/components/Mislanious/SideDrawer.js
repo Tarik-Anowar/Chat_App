@@ -7,6 +7,10 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
+import SuprSendInbox, { bellComponent, backgroundColor, SuprSendProvider } from "@suprsend/react-inbox";
+// import { useUnseenCount } from "@suprsend/react-inbox";
+// import { useNotifications } from "@suprsend/react-inbox";
+
 
 const SideDrawer = () => {
     const [search, setSearch] = useState("");
@@ -15,7 +19,10 @@ const SideDrawer = () => {
     const [loadingChat, setLoadingChat] = useState(false);
     const history = useHistory();
     const toast = useToast();
-    const {user,setSelectedChat,chats,setChats} = ChatState();
+    // const { unSeenCount, markAllSeen } = useUnseenCount();
+    // const {notifications, markClicked, markAllRead, initialLoading, hasNext, fetchPrevious, fetchMoreLoading } = useNotifications(storeId)
+
+    const { user, setSelectedChat, chats, setChats } = ChatState();
 
     const { isOpen, isClose, onOpen, onClose } = useDisclosure();
 
@@ -67,23 +74,23 @@ const SideDrawer = () => {
     const accessChat = async (userId) => {
         try {
             setLoadingChat(true);
-    
+
             const config = {
                 headers: {
                     "content-type": "application/json",
                     Authorization: `Bearer ${user.token}`,
                 }
             };
-    
+
             const { data } = await axios.post('/api/chat', { userId }, config);
-    
+
             if (!chats.find((c) => c._id === data._id)) {
                 setChats([data, ...chats]);
             }
             setSelectedChat(data);
-            setLoadingChat(false); 
+            setLoadingChat(false);
             onClose();
-    
+
         } catch (error) {
             toast({
                 position: "top-left",
@@ -92,10 +99,10 @@ const SideDrawer = () => {
                 duration: 3000,
                 isClosable: true,
             });
-            setLoadingChat(false); 
+            setLoadingChat(false);
         }
     }
-    
+
 
     return (
         <>
@@ -121,9 +128,13 @@ const SideDrawer = () => {
                 </Text>
                 <div>
                     <Menu>
-                        <MenuButton>
-                            <BellIcon fontSize="3xl" m="1" />
-                        </MenuButton>
+                           <SuprSendInbox
+                                bellComponent={() => <BellIcon fontSize="3xl" m="1" />}
+                                workspaceKey="2cZImFSEpYicveWYVK4JE"
+                                subscriberId={user.subscriber_id}
+                                distinctId={user.email}
+                            />
+                           
                         {/* <MenuList></MenuList> */}
                     </Menu>
                     <Menu>
@@ -176,7 +187,7 @@ const SideDrawer = () => {
                                 />
                             ))
                         )}
-                        {loadingChat && <Spinner ml="auto" d="flex"/>}
+                        {loadingChat && <Spinner ml="auto" d="flex" />}
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>

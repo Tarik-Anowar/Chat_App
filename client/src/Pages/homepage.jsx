@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
-import { Container, Box, Text, Tab, Tabs, TabList, TabPanel, TabPanels } from '@chakra-ui/react'
+import { Container, Box, Text, Tab, Tabs, TabList, TabPanel, TabPanels, background } from '@chakra-ui/react'
 import Signup from "../components/Authentication/signup";
 import Login from "../components/Authentication/login";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-
+import { BellIcon } from "@chakra-ui/icons";
 const HomePage = () => {
     const history = useHistory();
-    useEffect(()=>{
+    useEffect(() => {
         const user = JSON.parse(localStorage.getItem("userInfo"));
-        if(user) history.push("/chats");
-    },[history]);
+        if (user) history.push("/chats");
+    }, [history]);
     return (
         <Container>
             <Box
@@ -42,10 +42,12 @@ const HomePage = () => {
                     </TabList>
                     <TabPanels>
                         <TabPanel>
-                            <Login/>
+
+                            <Login />
                         </TabPanel>
                         <TabPanel>
-                           <Signup/>
+
+                            <Signup />
                         </TabPanel>
                     </TabPanels>
                 </Tabs>

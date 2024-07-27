@@ -1,25 +1,33 @@
 import generateToken from '../config/generateToken.js';
-import User from '../models/userModel.js'
+import User from '../models/userModel.js';
 import asyncHandler from 'express-async-handler';
+import crypto from 'crypto';
+
+// Move dotenv.config() to your main entry file (e.g., server.js)
+import { config } from 'dotenv';
+config();
 
 export const registerUser = asyncHandler(async (req, res) => {
-
     const { name, email, password, pic } = req.body;
-    const userExists = await User.findOne({ email });
     if (!name || !email || !password) {
         res.status(400);
-        throw new Error("Plase enter all the fileds.");
+        throw new Error("Please enter all the fields.");
     }
+
+    const userExists = await User.findOne({ email });
+
     if (userExists) {
         res.status(400);
         throw new Error("User already exists.");
     }
-    const user = await User.create({
+
+        const user = await User.create({
         name,
         email,
         password,
         pic,
     });
+
     if (user) {
         res.status(201).json({
             _id: user._id,
@@ -27,37 +35,48 @@ export const registerUser = asyncHandler(async (req, res) => {
             email: user.email,
             pic: user.pic,
             token: generateToken(user._id),
-        })
-    }
-    else {
+        });
+    } else {
         res.status(400);
-        throw new Error("Fail to create new user")
+        throw new Error("Failed to create new user");
     }
-}
-);
+});
 
 export const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+
     if (!email || !password) {
         res.status(400);
-        throw new Error("Enter all the filds");
+        throw new Error("Enter all the fields");
     }
+
     const user = await User.findOne({ email });
+
+    function hmac_rawurlsafe_base64_string(distinct_id, secret) {
+        const hash = crypto
+          .createHmac("sha256", secret)
+          .update(distinct_id)
+          .digest("base64url");
+        return hash.trimEnd("=");
+      }
+
     if (user && (await user.matchPassword(password))) {
+        const subscriber_id = hmac_rawurlsafe_base64_string(user.email, process.env.WORKSPACE_SECRET);
+        console.log("secrect = "+process.env.WORKSPACE_SECRET)
         res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            subscriber_id:subscriber_id,
             pic: user.pic,
             token: generateToken(user._id),
         });
-    }
-    else {
+    } else {
         res.status(400);
-        throw new Error("Invalid Id or password");
+        throw new Error("Invalid email or password");
     }
 });
-//api/user?serch=tarik
+
 export const allUsers = asyncHandler(async (req, res) => {
     const keyword = req.query.search ? {
         $or: [
@@ -65,11 +84,11 @@ export const allUsers = asyncHandler(async (req, res) => {
             { email: { $regex: req.query.search, $options: "i" } },
         ],
     } : {};
-    
+
     const users = await User.find({
         ...keyword,
-        _id: { $ne: req.user._id } 
+        _id: { $ne: req.user._id },
     });
+
     res.send(users);
 });
-
