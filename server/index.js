@@ -39,7 +39,7 @@ app.use(errorHandler);
 
 // Basic route
 app.get('/', (req, res) => {
-    res.send('Hello');
+    res.json('Hello');
 });
 
 // Socket.io setup
