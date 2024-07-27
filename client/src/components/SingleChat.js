@@ -9,7 +9,7 @@ import './styles.css';
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client"
 
-const ENDPOINT = `http://${window.location.host}`;
+const ENDPOINT = `https://chat-app-sever-git-main-tarik-anowars-projects.vercel.app/`;
 
 var socket,selectedChatCompare;
 

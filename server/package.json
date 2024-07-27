@@ -9,6 +9,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
+    "dev": "nodemon index.js", 
+    "build": "echo \"No build step specified\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,5 +26,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
     "socket.io": "^4.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22" 
   }
 }
