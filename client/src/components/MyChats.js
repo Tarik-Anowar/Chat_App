@@ -7,7 +7,7 @@ import ChatLoading from "./ChatLoading";
 import getSender from "../config/ChatLogics";
 import GroupChatModal from "./Mislanious/GroupChatModel";
 import StatusModal from "./Mislanious/Status";
-
+import instance from "../config/config.js";
 const MyChats = ({ fetchAgain }) => {
     const { user, setChats, chats, selectedChat, setSelectedChat } = ChatState();
     const toast = useToast();
@@ -29,9 +29,11 @@ const MyChats = ({ fetchAgain }) => {
             const config = {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
                 },
+                withCredentials: true, 
             };
-
             const { data } = await axios.get("/api/chat", config);
             setChats(data);
         } catch (err) {
@@ -74,9 +76,9 @@ const MyChats = ({ fetchAgain }) => {
                 <Flex justifyContent="space-between">
                     <Flex>
                         <StatusModal>
-                        <Button>status</Button>
+                            <Button>status</Button>
                         </StatusModal>
-                       
+
                     </Flex>
 
                     <Flex>

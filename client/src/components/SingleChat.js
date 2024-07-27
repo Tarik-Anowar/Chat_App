@@ -69,10 +69,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             try {
                 const config = {
                     headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${user.token}`,
+                      Authorization: `Bearer ${user.token}`,
+                      'Content-Type': 'application/json',
+                      Accept: 'application/json',
                     },
-                };
+                    withCredentials: true, 
+                  };
                 setNewMessage("");
                 const { data } = await axios.post("/api/message", {
                     content: newMessgae,
@@ -101,10 +103,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         try {
             const config = {
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${user.token}`,
+                  Authorization: `Bearer ${user.token}`,
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
                 },
-            };
+                withCredentials: true, 
+              };
 
             setLoading(true);
             const {data} = await axios.get(`/api/message/${selectedChat._id}`,config)
