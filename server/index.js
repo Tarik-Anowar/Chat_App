@@ -1,44 +1,49 @@
 import express from 'express';
 import http from 'http';
-import {Server} from 'socket.io';
+import { Server } from 'socket.io';
 import dotenv from 'dotenv';
+import cors from 'cors'; // Import cors
 import connectDB from './config/db.js';
 import router from './routes/routes.js';
 import chatRouter from './routes/chatRoutes.js';
 import messageRouter from './routes/messageRoute.js';
-import { notFound,errorHandler } from './middleware/errorMiddleware.js';
-import User from './models/userModel.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 const app = express();
 dotenv.config();
 connectDB();
+
+app.use(cors({
+    origin: 'https://chat-app-client-jade.vercel.app', 
+    methods: ['GET', 'POST'],
+    credentials: true 
+}));
+
 const server = http.createServer(app);
 const io = new Server(server, {
     pingTimeout: 60000,
     cors: {
         origin: 'https://chat-app-client-jade.vercel.app',
-        methods: ['GET', 'POST'] 
+        methods: ['GET', 'POST']
     }
 });
 
-
-io.on("connection",(socket)=>{
+io.on("connection", (socket) => {
     console.log("connected to socket.io");
 
-    socket.on('setup',(userData)=>{
+    socket.on('setup', (userData) => {
         socket.join(userData._id);
         socket.emit('connected');
-        console.log(userData._id)
+        console.log(userData._id);
     });
 
-    socket.on("disconnect",()=>{
+    socket.on("disconnect", () => {
         console.log("disconnected from socket.io");
     });
 
-    socket.on('join chat',(room)=>{
+    socket.on('join chat', (room) => {
         socket.join(room);
         console.log("User Joined Room: " + room);
-        
     });
 
     socket.on('new message', (newMessage) => {
@@ -55,22 +60,20 @@ io.on("connection",(socket)=>{
         var sender = status.sender;
         socket.broadcast.emit("broadcast", status);
     });
-    
+});
 
-})
-
-app.get("/",(req,res)=>{
-    res.json({message:"Hello"});
+app.get("/", (req, res) => {
+    res.json({ message: "Hello" });
 });
 
 app.use(express.json());
-app.use('/api/user',router);
-app.use('/api/chat',chatRouter);
-app.use("/api/message",messageRouter);
+app.use('/api/user', router);
+app.use('/api/chat', chatRouter);
+app.use("/api/message", messageRouter);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT  = process.env.PORT||9000;
-server.listen(PORT,()=>{
-    console.log(`server is listenling on http://127.0.0.1:${PORT}`);
-})
+const PORT = process.env.PORT || 9000;
+server.listen(PORT, () => {
+    console.log(`Server is listening on http://127.0.0.1:${PORT}`);
+});
