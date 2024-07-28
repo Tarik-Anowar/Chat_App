@@ -62,11 +62,17 @@ io.on("connection", (socket) => {
     });
 });
 
+app.use(express.json());
+
 app.get("/", (req, res) => {
     res.json({ message: "Hello" });
 });
 
-app.use(express.json());
+app.get("/api", (req, res) => {
+    res.json({ message: "Hello Fom Tarik" });
+});
+
+
 app.use('/api/user', router);
 app.use('/api/chat', chatRouter);
 app.use("/api/message", messageRouter);

@@ -11,7 +11,7 @@ import io from "socket.io-client";
 
 const ENDPOINT = `https://chat-app-sever-theta.vercel.app/`;
 
-var socket, selectedChatCompare;
+let socket;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const { user, selectedChat, setSelectedChat } = ChatState();
@@ -24,7 +24,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const toast = useToast();
 
     useEffect(() => {
+        // Initialize socket connection
         socket = io(ENDPOINT);
+
         socket.emit("setup", user);
 
         socket.on("connect", () => {
@@ -37,25 +39,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, [user]);
 
     useEffect(() => {
-        socket.on("message received", (newMessage) => {
-            if (!selectedChatCompare || selectedChatCompare._id !== newMessage.chat._id) {
-                // Give notification;
-            } else {
-                setMessages(prevMessages => [...prevMessages, newMessage]);
-            }
-        });
+        if (selectedChat) {
+            // Join the chat room when a chat is selected
+            socket.emit("join chat", selectedChat._id);
+            
+            // Fetch messages for the selected chat
+            fetchMessages();
 
-        return () => {
-            socket.off("message received");
-        };
-    }, [selectedChatCompare]);
+            // Listen for incoming messages
+            socket.on("message received", (newMessage) => {
+                if (selectedChat && selectedChat._id === newMessage.chat._id) {
+                    setMessages(prevMessages => [...prevMessages, newMessage]);
+                }
+            });
 
-    useEffect(() => {
-        if (headerRef.current) {
-            setHeaderHeight(headerRef.current.clientHeight);
+            return () => {
+                socket.off("message received");
+            };
         }
-        fetchMessages();
-        selectedChatCompare = selectedChat;
     }, [selectedChat]);
 
     const sendMessage = async (e) => {
@@ -90,7 +91,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     const typingHandler = (e) => {
         setNewMessage(e.target.value);
-        // Typing indicator logic
+        // Typing indicator logic can be added here
     };
 
     const fetchMessages = async () => {
@@ -109,7 +110,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             const { data } = await axios.get(`/api/message/${selectedChat._id}`, config);
             setMessages(data);
             setLoading(false);
-            socket.emit('join chat', selectedChat._id);
         } catch (error) {
             toast({
                 title: "Error Loading Messages",
@@ -119,6 +119,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 isClosable: true,
                 position: "bottom",
             });
+            setLoading(false);
         }
     };
 
@@ -140,7 +141,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     >
                         <IconButton
                             icon={<ArrowBackIcon />}
-                            onClick={() => setSelectedChat("")}
+                            onClick={() => setSelectedChat(null)}
                             aria-label="Go Back"
                         />
                         <Box display="flex" alignItems="center" flex="1" justifyContent="center">
@@ -149,7 +150,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     <Text fontWeight="bold" mr={2}>
                                         {selectedChat.chatName ? selectedChat.chatName.toUpperCase() : ""}
                                     </Text>
-                                    <UpdateChatModal fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} fetchMessages={sendMessage} />
+                                    <UpdateChatModal fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} fetchMessages={fetchMessages} />
                                 </>
                             ) : (
                                 <>
