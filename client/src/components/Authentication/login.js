@@ -34,7 +34,7 @@ const Login = () => {
           },
         };
         const { data } = await axios.post(
-          "https://chat-app-sever-theta.vercel.app/api/user/login",
+          "/api/user/login",
           { email, password },
           config
         );
