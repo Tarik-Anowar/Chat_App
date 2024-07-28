@@ -34,7 +34,7 @@ const MyChats = ({ fetchAgain }) => {
                 },
                 withCredentials: true, 
             };
-            const { data } = await axios.get("/api/chat", config);
+            const { data } = await axios.get("https://chat-app-sever-theta.vercel.app/api/chat", config);
             setChats(data);
         } catch (err) {
             toast({

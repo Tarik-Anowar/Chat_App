@@ -92,7 +92,7 @@ const Signup = () => {
                   Accept: 'application/json',
                 },
               };
-            const { data } = await axios.post("/api/user", { name, email, password, pic }, config);
+            const { data } = await axios.post("https://chat-app-sever-theta.vercel.app/api/user", { name, email, password, pic }, config);
             toast({
                 title: "Registration Successful",
                 status: "success",
