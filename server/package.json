@@ -8,8 +8,8 @@
   },
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js", 
+    "start": "nodemon index.js",
+    "dev": "node index.js", 
     "build": "echo \"No build step specified\" && exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

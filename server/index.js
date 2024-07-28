@@ -13,11 +13,13 @@ const app = express();
 dotenv.config();
 connectDB();
 
-app.use(cors({
-    origin: 'https://chat-app-client-jade.vercel.app', 
+const corsOptions = {
+    origin: ['http://localhost:3000', 'https://chat-app-client-jade.vercel.app'],
     methods: ['GET', 'POST'],
-    credentials: true 
-}));
+    credentials: true
+};
+
+app.use(cors(corsOptions));
 
 const server = http.createServer(app);
 const io = new Server(server, {
